@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"interpreter/lexer"
 	"interpreter/parser"
+	"interpreter/evaluator"
+	"interpreter/object"
 )
 
 const PROMT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
 	for {
 		fmt.Printf(PROMT)
 		scanned := scanner.Scan()
@@ -26,8 +29,11 @@ func Start(in io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program, env)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
 
