@@ -66,6 +66,7 @@ func testConstants(expected []interface{}, actual []object.Object) error {
 	}
 	return nil
 }
+
 func testIntegerObject(expected int64, actual object.Object) error {
 	result, ok := actual.(*object.Integer)
 	if !ok {
