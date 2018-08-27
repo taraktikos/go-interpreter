@@ -1,18 +1,27 @@
 package vm
 
 import (
-	"interpreter/ast"
-	"interpreter/lexer"
-	"interpreter/parser"
-	"interpreter/object"
 	"fmt"
-	"testing"
+	"interpreter/ast"
 	"interpreter/compiler"
+	"interpreter/lexer"
+	"interpreter/object"
+	"interpreter/parser"
+	"testing"
 )
 
 type vmTestCase struct {
 	input    string
 	expected interface{}
+}
+
+func TestArrayLiterals(t *testing.T) {
+	tests := []vmTestCase{
+		{"[]", []int{}},
+		{"[1, 2, 3]", []int{1, 2, 3}},
+		{"[1 + 2, 3 * 4, 5 + 6]", []int{3, 12, 11}},
+	}
+	runVmTests(t, tests)
 }
 
 func TestStringExpressions(t *testing.T) {
@@ -150,6 +159,22 @@ func testExpectedObject(t *testing.T, expected interface{}, actual object.Object
 		err := testStringObject(expected, actual)
 		if err != nil {
 			t.Errorf("testStringObject failed: %s", err)
+		}
+	case []int:
+		array, ok := actual.(*object.Array)
+		if !ok {
+			t.Errorf("object not Array: %T (%+v)", actual, actual)
+			return
+		}
+		if len(array.Elements) != len(expected) {
+			t.Errorf("wrong num of elements. want=%d, got=%d", len(expected), len(array.Elements))
+			return
+		}
+		for i, expectedElem := range expected {
+			err := testIntegerObject(int64(expectedElem), array.Elements[i])
+			if err != nil {
+				t.Errorf("testIntegerObject failed: %s", err)
+			}
 		}
 	}
 }
