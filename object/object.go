@@ -1,26 +1,28 @@
 package object
 
 import (
-	"fmt"
-	"interpreter/ast"
 	"bytes"
-	"strings"
+	"fmt"
 	"hash/fnv"
+	"interpreter/ast"
+	"interpreter/code"
+	"strings"
 )
 
 type ObjectType string
 
 const (
-	FUNCTION_OBJ     = "FUNCTION"
-	ERROR_OBJ        = "ERROR"
-	RETURN_VALUE_OBJ = "RETURN"
-	INTEGER_OBJ      = "INTEGER"
-	BOOLEAN_OBJ      = "BOOLEAN"
-	NULL_OBJ         = "NULL"
-	STRING_OBJ       = "STRING"
-	BUILTIN_OBJ      = "BUILTIN"
-	ARRAY_OBJ        = "ARRAY"
-	HASH_OBJ         = "HASH"
+	FUNCTION_OBJ          = "FUNCTION"
+	ERROR_OBJ             = "ERROR"
+	RETURN_VALUE_OBJ      = "RETURN"
+	INTEGER_OBJ           = "INTEGER"
+	BOOLEAN_OBJ           = "BOOLEAN"
+	NULL_OBJ              = "NULL"
+	STRING_OBJ            = "STRING"
+	BUILTIN_OBJ           = "BUILTIN"
+	ARRAY_OBJ             = "ARRAY"
+	HASH_OBJ              = "HASH"
+	COMPILED_FUNCTION_OBJ = "COMPILED_FUNCTION_OBJ"
 )
 
 type Object interface {
@@ -171,4 +173,13 @@ func (h *Hash) Inspect() string {
 	out.WriteString(strings.Join(pairs, ", "))
 	out.WriteString("}")
 	return out.String()
+}
+
+type CompiledFunction struct {
+	Instructions code.Instructions
+}
+
+func (cf *CompiledFunction) Type() ObjectType { return COMPILED_FUNCTION_OBJ }
+func (cf *CompiledFunction) Inspect() string {
+	return fmt.Sprintf("CompiledFunction[%p]", cf)
 }
